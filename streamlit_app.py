@@ -35,11 +35,20 @@ def format_duration(seconds):
     return f"{int(hours)}h {int(minutes)}m {int(seconds)}s"
     
 def validate_columns(df):
-    """ Validate the presence of required columns """
+    """ Validate the presence of required columns and detect extra columns """
     missing_columns = [col for col in required_columns if col not in df.columns]
+    extra_columns = [col for col in df.columns if col not in required_columns]
+    
+    messages = []
     if missing_columns:
-        return False, missing_columns
+        messages.append(f"Missing columns: {', '.join(missing_columns)}")
+    if extra_columns:
+        messages.append(f"Extra columns found: {', '.join(extra_columns)}. Please remove them.")
+    
+    if messages:
+        return False, messages
     return True, None
+
 
 def validate_data_types(df):
     """ Validate data types of certain columns """
