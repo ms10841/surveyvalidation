@@ -45,14 +45,18 @@ def validate_data_types(df):
     # Parse date columns
     for date_column in expected_types.keys():
         if date_column in df.columns:
-            df[date_column] = pd.to_datetime(df[date_column], errors='coerce')
-
+            try:
+                df[date_column] = pd.to_datetime(df[date_column], utc=True)  # Parse UTC datetime
+                df[date_column] = df[date_column].dt.tz_convert(None)  # Convert to naive datetime
+            except Exception as e:
+                return {date_column: str(e)}
+    
     incorrect_types = {}
     for column, expected_type in expected_types.items():
         if column in df.columns and df[column].dtype != expected_type:
             incorrect_types[column] = (df[column].dtype, expected_type)
     return incorrect_types
-
+    
 def main():
     st.title("Survey Validation Tool")
     st.write("Welcome to the survey validation tool - this will review the file you upload and provide a message if it matches the correct format.")
