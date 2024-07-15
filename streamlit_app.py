@@ -42,6 +42,14 @@ def validate_data_types(df):
         "RecordedDate": "datetime64[ns]"
     }
     
+    # Parse date columns
+    for date_column in expected_types.keys():
+        if date_column in df.columns:
+            try:
+                df[date_column] = pd.to_datetime(df[date_column], format='%Y-%m-%dT%H:%M:%SZ', errors='raise')
+            except Exception as e:
+                return {date_column: str(e)}
+    
     incorrect_types = {}
     for column, expected_type in expected_types.items():
         if column in df.columns and df[column].dtype != expected_type:
@@ -68,8 +76,8 @@ def main():
             # Validate data types
             incorrect_types = validate_data_types(df)
             if incorrect_types:
-                for column, (actual_type, expected_type) in incorrect_types.items():
-                    st.error(f"Incorrect data type for column '{column}': Expected {expected_type}, got {actual_type}")
+                for column, error in incorrect_types.items():
+                    st.error(f"Error in column '{column}': {error}")
             else:
                 st.success("All data types are correct.")
                 
