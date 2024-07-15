@@ -57,6 +57,8 @@ def validate_data_types(df):
             incorrect_types[column] = (df[column].dtype, expected_type)
     return incorrect_types
     
+import numpy as np
+
 def main():
     st.title("Survey Validation Tool")
     st.write("Welcome to the survey validation tool - this will review the file you upload and provide a message if it matches the correct format.")
@@ -71,21 +73,38 @@ def main():
         is_valid, missing_columns = validate_columns(df)
         if not is_valid:
             st.error(f"Missing columns: {', '.join(missing_columns)}")
-        else:
-            st.success("All required columns are present.")
-            
-            # Validate data types
-            incorrect_types = validate_data_types(df)
-            if incorrect_types:
-                for column, error in incorrect_types.items():
-                    st.error(f"Error in column '{column}': {error}")
-            else:
-                st.success("All data types are correct.")
-                
-            # Display 5 sample records where data is not NA and not completely blank
-            non_na_non_blank_sample = df.dropna(how='all').dropna(axis=1, how='all').head(5)
-            st.write("5 Sample Records where data is not NA and not completely blank:")
-            st.table(non_na_non_blank_sample)
+            return
+        
+        st.success("All required columns are present.")
+        
+        # Validate data types
+        incorrect_types = validate_data_types(df)
+        if incorrect_types:
+            for column, error in incorrect_types.items():
+                st.error(f"Error in column '{column}': {error}")
+            return
+        
+        st.success("All data types are correct.")
+        
+        # Plot Duration__in_seconds_ as a bar chart
+        st.subheader("Duration__in_seconds_ Bar Chart")
+        st.bar_chart(df['Duration__in_seconds_'])
+        
+        # Calculate statistical summary
+        summary = df['Duration__in_seconds_'].describe()
+        avg = summary['mean']
+        std_dev = summary['std']
+        upper_control_limit = avg + 3 * std_dev
+        lower_control_limit = avg - 3 * std_dev
+        
+        # Display summary table
+        st.subheader("Statistical Summary for Duration__in_seconds_")
+        summary_table = pd.DataFrame({
+            'Statistic': ['Average', 'Standard Deviation', 'Upper Control Limit', 'Lower Control Limit'],
+            'Value': [avg, std_dev, upper_control_limit, lower_control_limit]
+        })
+        st.table(summary_table)
+
 
 if __name__ == "__main__":
     main()
