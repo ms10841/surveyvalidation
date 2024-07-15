@@ -135,11 +135,12 @@ def main():
             
             st.table(duration_summary[['mean', 'std', 'min', '25%', '50%', '75%', 'max']])
 
-            # Calculate averages of numeric columns
-            st.subheader("Average of Numeric Columns")
+            # Calculate additional statistics for numeric columns
+            st.subheader("Additional Statistics for Numeric Columns")
             numeric_columns = df.select_dtypes(include=[np.number]).columns
-            averages = df[numeric_columns].mean()
-            st.table(averages)
+            stats = df[numeric_columns].describe().transpose()
+            stats['range'] = stats['max'] - stats['min']
+            st.table(stats[['count', 'mean', 'std', 'min', '25%', '50%', '75%', 'max', 'range']])
 
 if __name__ == "__main__":
     main()
