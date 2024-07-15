@@ -116,6 +116,14 @@ def main():
             # Statistical summary of Duration__in_seconds_
             st.subheader("Statistical Summary for Duration__in_seconds_")
             duration_summary = df['Duration__in_seconds_'].describe()
+            duration_summary.loc['mean'] = format_duration(duration_summary['mean'])
+            duration_summary.loc['std'] = format_duration(duration_summary['std'])
+            duration_summary.loc['min'] = format_duration(duration_summary['min'])
+            duration_summary.loc['25%'] = format_duration(duration_summary['25%'])
+            duration_summary.loc['50%'] = format_duration(duration_summary['50%'])
+            duration_summary.loc['75%'] = format_duration(duration_summary['75%'])
+            duration_summary.loc['max'] = format_duration(duration_summary['max'])
+            
             st.table(duration_summary[['mean', 'std', 'min', '25%', '50%', '75%', 'max']])
 
 
