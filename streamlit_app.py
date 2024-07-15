@@ -77,15 +77,15 @@ def main():
             # Validate data types
             incorrect_types = validate_data_types(df)
             if incorrect_types:
-                for column, (actual_type, expected_type) in incorrect_types.items():
-                    st.error(f"Incorrect data type for column '{column}': Expected {expected_type}, got {actual_type}")
+                for column, error in incorrect_types.items():
+                    st.error(f"Error in column '{column}': {error}")
             else:
                 st.success("All data types are correct.")
                 
-            # Display 5 sample records where data is not NA
-            non_na_sample = df.dropna().head(5)
-            st.write("5 Sample Records where data is not NA:")
-            st.table(non_na_sample)
+            # Display 5 sample records where data is not NA and not completely blank
+            non_na_non_blank_sample = df.dropna(how='all').dropna(axis=1, how='all').head(5)
+            st.write("5 Sample Records where data is not NA and not completely blank:")
+            st.table(non_na_non_blank_sample)
 
 if __name__ == "__main__":
     main()
