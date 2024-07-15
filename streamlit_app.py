@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import numpy as np
 
 # Required column headers
 required_columns = [
@@ -26,6 +27,13 @@ required_columns = [
     "rdem_first_gen", "rdem_international", "rdem_degree"
 ]
 
+def format_duration(seconds):
+    hours = seconds // 3600
+    seconds %= 3600
+    minutes = seconds // 60
+    seconds %= 60
+    return f"{int(hours)}h {int(minutes)}m {int(seconds)}s"
+    
 def validate_columns(df):
     """ Validate the presence of required columns """
     missing_columns = [col for col in required_columns if col not in df.columns]
@@ -57,7 +65,15 @@ def validate_data_types(df):
             incorrect_types[column] = (df[column].dtype, expected_type)
     return incorrect_types
     
-import numpy as np
+def categorize_duration(seconds):
+    # Define bins for durations
+    bins = [0, 60, 120, 300, 600, 1200, 1800, 3600, 7200, 10800, np.inf]
+    labels = ['<1 min', '1-2 mins', '2-5 mins', '5-10 mins', '10-20 mins', '20-30 mins', '30-60 mins', '1-2 hrs', '2-3 hrs', '3+ hrs']
+    
+    # Categorize duration into bins
+    for i in range(len(bins) - 1):
+        if bins[i] <= seconds < bins[i + 1]:
+            return labels[i]
 
 def main():
     st.title("Survey Validation Tool")
@@ -84,21 +100,24 @@ def main():
             else:
                 st.success("All data types are correct.")
                 
-            # Display 5 sample records where data is not NA and not completely blank
-            non_na_non_blank_sample = df.dropna(how='all').dropna(axis=1, how='all').head(5)
-            st.write("5 Sample Records where data is not NA and not completely blank:")
+            # Display 5 sample records without NA values
+            st.subheader("Sample Records without NA values or completely blank")
+            non_na_non_blank_sample = df.head(5)
             st.table(non_na_non_blank_sample)
             
-            # Plot frequency of Duration__in_seconds_ as a bar chart
-            st.subheader("Duration__in_seconds_ Frequency")
-            duration_counts = df['Duration__in_seconds_'].value_counts()
+            # Categorize Duration__in_seconds_ into bins
+            df_filtered['Duration_Category'] = df_filtered['Duration__in_seconds_'].apply(categorize_duration)
+            
+            # Plot frequency of duration categories as a bar chart
+            st.subheader("Duration Distribution")
+            duration_counts = df['Duration_Category'].value_counts().sort_index()
             st.bar_chart(duration_counts)
-                
+            
             # Statistical summary of Duration__in_seconds_
             st.subheader("Statistical Summary for Duration__in_seconds_")
             duration_summary = df['Duration__in_seconds_'].describe()
             st.table(duration_summary[['mean', 'std', 'min', '25%', '50%', '75%', 'max']])
-            
+
 
 if __name__ == "__main__":
     main()
