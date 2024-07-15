@@ -91,12 +91,12 @@ def main():
             
             # Plot frequency of Duration__in_seconds_ as a bar chart
             st.subheader("Duration__in_seconds_ Frequency")
-            duration_counts = df_filtered['Duration__in_seconds_'].value_counts()
+            duration_counts = df['Duration__in_seconds_'].value_counts()
             st.bar_chart(duration_counts)
                 
             # Statistical summary of Duration__in_seconds_
             st.subheader("Statistical Summary for Duration__in_seconds_")
-            duration_summary = df_filtered['Duration__in_seconds_'].describe()
+            duration_summary = df['Duration__in_seconds_'].describe()
             st.table(duration_summary[['mean', 'std', 'min', '25%', '50%', '75%', 'max']])
             
 
