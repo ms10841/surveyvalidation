@@ -92,12 +92,9 @@ def main():
         if df_filtered.empty:
             st.warning("No valid records found after filtering out rows with NA values.")
         else:
-            # Count occurrences of each duration value
-            duration_counts = df_filtered['Duration__in_seconds_'].value_counts()
-            
-            # Plot as a bar chart
-            st.subheader("Duration__in_seconds_ Distribution")
-            st.bar_chart(duration_counts)
+            # Plot Duration__in_seconds_ as a bar chart
+            st.subheader("Duration__in_seconds_ Bar Chart")
+            st.bar_chart(df_filtered['Duration__in_seconds_'])
             
             # Calculate statistical summary
             summary = df_filtered['Duration__in_seconds_'].describe()
@@ -113,12 +110,6 @@ def main():
                 'Value': [avg, std_dev, upper_control_limit, lower_control_limit]
             })
             st.table(summary_table)
-            
-            # Display 5 sample records without NA values
-            st.subheader("Sample Records without NA values")
-            non_na_sample = df_filtered.head(5)
-            st.table(non_na_sample)
-
 
 if __name__ == "__main__":
     main()
