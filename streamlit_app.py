@@ -106,7 +106,7 @@ def main():
             st.table(non_na_non_blank_sample)
             
             # Categorize Duration__in_seconds_ into bins
-            df_filtered['Duration_Category'] = df_filtered['Duration__in_seconds_'].apply(categorize_duration)
+            df['Duration_Category'] = df['Duration__in_seconds_'].apply(categorize_duration)
             
             # Plot frequency of duration categories as a bar chart
             st.subheader("Duration Distribution")
